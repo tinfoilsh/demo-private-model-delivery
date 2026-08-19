@@ -1,0 +1,10 @@
+.private/
+artifacts/
+result
+result-*
+*.emwp
+*.mpk
+*.key
+*.b64
+external-config*.yml
+
