@@ -12,6 +12,11 @@ The demo uses:
 - `PRIVATE_MODEL_KEY` as the boot-only model key secret; and
 - `dev-vault.tinfoil.sh` as the attested secret provider.
 
+The complete customer-vault deployment is in `vault/`. It pins the strict
+provider source and includes a hardened systemd unit. `dev-vault/` is a
+separate, conspicuously unsafe protocol harness for locally built CVMs whose
+provenance cannot yet pass the real verifier.
+
 ## Prepare the encrypted model
 
 ```bash
@@ -56,6 +61,10 @@ identity or the provider repository. During local pre-release testing,
 `tinctl dev-launch` imports its base metadata from `tinfoilsh/confidential-debug`;
 after the demo has its own release provenance, configure the provider for
 `tinfoilsh/demo-private-model-delivery`.
+
+Vault transport is always HTTPS, including local and air-gapped deployments.
+Use a private CA embedded as `vault-ca` in the measured configuration rather
+than plaintext HTTP; the host and network remain outside the CVM trust boundary.
 
 ## Release boundary
 
