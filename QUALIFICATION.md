@@ -27,9 +27,10 @@
 | Missing model key | Fail closed | Pass |
 | Tampered ciphertext | Fail closed | Pass |
 | Wrong attested model identity | Fail closed | Pass |
-| Local CVM boot with encrypted model | Pass | Blocked by box3 guest boot |
-| In-CVM inference | Valid chat completion | Blocked by box3 guest boot |
-| Model key visible to workload container | No | Static/tests pass; runtime blocked |
+| Local CVM boot with encrypted model | Pass | Pass |
+| In-CVM inference | Valid chat completion | Pass |
+| Inference container restart | Model remains available | Pass |
+| Model key declared for workload container | No | Pass; runtime validation rejects this configuration |
 | Provider health over TLS 1.3 | Pass | Pass |
 | Provider under TLS 1.2 | Reject | Pass |
 | Provider without client certificate | Reject | Pass |
@@ -39,7 +40,10 @@
 | Unauthorized repository | Reject | Pass |
 | Malformed v3 document | Reach verifier and reject | Pass |
 | Provider response/log error paths | Never expose model key | Pass |
-| Provider with unpublished local CVM | Reject at provenance | Blocked before provider by box3 guest boot |
+| Strict provider with unpublished local CVM | Reject at provenance | Pass |
+| Development provider with unpublished local CVM | Complete protocol except verification | Pass |
+| Measured private CA for vault HTTPS | Connect and fetch | Pass |
+| Plaintext HTTP vault URL | Reject | Pass |
 | Provider with released CVM and v3 provenance | Pass | Blocked on approved CVM release |
 | Private workload repository collateral | Pass | Blocked on private-collateral support |
 
@@ -58,26 +62,39 @@
 - `dev-vault.tinfoil.sh` runs the provider directly on port 443 with
   `CAP_NET_BIND_SERVICE`; the obsolete Caddy and legacy vault services are
   disabled but preserved for rollback.
+- The local shipping image booted the encrypted EMWP, served a valid chat
+  completion, and served another completion after the inference container was
+  restarted.
+- A temporary development provider on the Box3 CVM bridge released exactly the
+  one missing model key over TLS 1.3. The enclave authenticated its measured
+  private CA, completed the certificate-bound challenge protocol, mounted the
+  model, and reached ready without the key in external config.
+- The temporary provider, private CA keys, external configs, listener, and
+  firewall rule were removed after the test. Box3 was left with no deployments.
 
-## Box3 blocker
+## Box3 resolution
 
-Box3 currently fails before the guest exposes networking or a console:
+The earlier conclusion that Box3 could not boot guests was incorrect. The
+actual sequence was:
 
-- full SEV-SNP `tinctl dev-launch` starts QEMU but never reaches the shim;
-- explicit non-CC/dummy-attestation mode behaves the same;
-- a manual SeaBIOS launch reaches a running Linux vCPU through QMP but still
-  never initializes the serial console, guest network, or shim; and
-- recent host logs show the same behavior with the released CVM `v0.11.0`, so
-  this is not specific to the encrypted model or local CVM tip.
+- Box3 ran `tinfoild 0.6.13`; canonical `infra` upgraded it to `0.6.15`.
+- The current debug image then showed Linux and PID 1 booting normally in about
+  two seconds.
+- The current `infra-harness` CPU config used mutable `busybox:latest`; hardened
+  CVM validation correctly rejected it before shim readiness.
+- Pinning the existing BusyBox digest made the smoke workload reach ready and
+  serve traffic.
+- The local shipping image then booted this private-model configuration and
+  completed inference both with direct control injection and with vault release.
 
-All test VMs and the manual QEMU process were removed. `tinctl ls` returned no
-deployments afterward. Reboot or repair box3's current guest boot path before
-rerunning the two runtime-blocked rows.
+`tinfoild#159` remains the narrow fix for unnecessary certificate-token fetches
+in self-signed dev launches. Qualification used a harmless placeholder token;
+shipping control-plane deployments already carry their real token.
 
 ## Remaining release gates
 
-1. Repair box3 guest boot and rerun encrypted in-CVM inference plus workload
-   environment inspection.
+1. Review and merge the measured private-CA support if local or air-gapped
+   customer vaults are a release requirement.
 2. Choose public workload provenance or implement authenticated private GitHub
    collateral for ATC and `freshness-witness`.
 3. Cut the approved CVM release through the normal supply-chain workflow.
