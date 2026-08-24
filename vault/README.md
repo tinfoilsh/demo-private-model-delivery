@@ -12,7 +12,7 @@ Run this after `scripts/prepare-model.sh`:
 ```
 
 The script checks out provider commit
-`517e90b4c12492a08d7af090821106673e672da1`, runs its race-enabled tests,
+`a92de50148d22e778be96a3f413eaabbefe745a5`, runs its race-enabled tests,
 builds it, and writes a mode-`0400` `secrets.json` containing only
 `PRIVATE_MODEL_KEY`. All output stays under ignored `.private/`.
 

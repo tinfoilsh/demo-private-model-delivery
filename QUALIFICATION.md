@@ -14,7 +14,7 @@
 - CVM kernel SHA-256: `b1e042ac790ffbd1f8031d13e870f7b907d2bf685e755d43b2975c78752b42eb`
 - CVM initrd SHA-256: `fc1d0b7a6703e1b6c7dd34113aea3c3f5f5ef51decb3363736103c46efc9a24d`
 - CVM roothash-file SHA-256: `1d6af1ba93af0c4b01853a4384e388cf66941b4bdd43d4af16b4767884455cab`
-- Provider source: `tinfoilsh/example-secret-keys@517e90b`
+- Provider source: `tinfoilsh/example-secret-keys@a92de50`
 
 ## Matrix
 
