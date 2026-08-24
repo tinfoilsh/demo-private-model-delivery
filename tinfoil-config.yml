@@ -1,4 +1,4 @@
-cvm-version: 0.11.0
+cvm-version: 0.11.1
 cpus: 8
 memory: 8192
 gpus: 0
@@ -13,11 +13,12 @@ models:
 
 containers:
   - name: inference
+    models: [private-smollm2]
     image: ghcr.io/ggml-org/llama.cpp@sha256:d740abe8d85d092a9bdffcc19c0f85a3b7e7e9a0b9588d12ae224c15c436e17e
     restart: always
     command:
       - -m
-      - /tinfoil/mwp/mwp-6f3d314d4cbda1f8418e3084a0c039f81f325c25352b83167d1373be4f6b77a2/SmolLM2-135M-Instruct.Q4_K_M.gguf
+      - /tinfoil/models/private-smollm2/SmolLM2-135M-Instruct.Q4_K_M.gguf
       - --host
       - 0.0.0.0
       - --port
@@ -33,4 +34,3 @@ shim:
   paths:
     - /health
     - /v1/*
-
