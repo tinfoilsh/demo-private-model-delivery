@@ -8,12 +8,12 @@
 - Modelwrap SHA-256: `06a5a42e2126a5ed612c4b0617d191ed9c65bb5b3a183863e92ec959cf097f57`
 - Inference image: `ghcr.io/ggml-org/llama.cpp@sha256:d740abe8d85d092a9bdffcc19c0f85a3b7e7e9a0b9588d12ae224c15c436e17e`
 - Model identity: `tinfoilsh/demo-private-smollm2@2ca51f69b2fbf3f46eea72a3195388c5e93f84c0d36ccd439d91cf529ee8e7a3`
-- Active EMWP SHA-256: `1f755efa099d64add1ea360bc83fd956e8b9b6a7a6523f9b7160dae9da10f38b`
-- CVM source: `tinfoilsh/cvmimage@7687b9764e8ea4da905ff10f2150bc6b7876c995`
-- CVM rootfs SHA-256: `1469ae7966561b0b2b81a4ca8e122aa148d8ff1bec0089fd0fc71b6c654d77d2`
+- Active EMWP SHA-256: `3f066ac94a9e44156caa5e4109e28dff66bdbe0b1c1772dcd16a4fa0f1b464d1`
+- CVM source: `tinfoilsh/cvmimage@5c4ae156f3a4945dd1e0231a90416d3d8c14a464`
+- CVM rootfs SHA-256: `4fa1860446c551eacc84da6bc62f182c0e066e4a7da0ed7b821d7b2675ec4644`
 - CVM kernel SHA-256: `b1e042ac790ffbd1f8031d13e870f7b907d2bf685e755d43b2975c78752b42eb`
 - CVM initrd SHA-256: `fc1d0b7a6703e1b6c7dd34113aea3c3f5f5ef51decb3363736103c46efc9a24d`
-- CVM roothash-file SHA-256: `8fea51650c7e9cbb416ae7f43701ed71e200c40f5f2fc35c71d2f1457e8b9723`
+- CVM roothash-file SHA-256: `1d6af1ba93af0c4b01853a4384e388cf66941b4bdd43d4af16b4767884455cab`
 - Provider source: `tinfoilsh/example-secret-keys@517e90b`
 
 ## Matrix
@@ -30,6 +30,8 @@
 | Local CVM boot with encrypted model | Pass | Pass |
 | In-CVM inference | Valid chat completion | Pass |
 | Inference container restart | Model remains available | Pass |
+| Per-container model grant | Model file visible only to inference | Pass |
+| Model key exposure to workload | Model key absent from environment | Pass |
 | Model key declared for workload container | No | Pass; runtime validation rejects this configuration |
 | Provider health over TLS 1.3 | Pass | Pass |
 | Provider under TLS 1.2 | Reject | Pass |
@@ -65,10 +67,15 @@
 - The local shipping image booted the encrypted EMWP, served a valid chat
   completion, and served another completion after the inference container was
   restarted.
-- A temporary development provider on the Box3 CVM bridge released exactly the
-  one missing model key over TLS 1.3. The enclave authenticated its measured
-  private CA, completed the certificate-bound challenge protocol, mounted the
-  model, and reached ready without the key in external config.
+- The named model path was present in the inference container and the model
+  file was absent from the ungranted debug-toolbox container. The model key was
+  also absent from the inference container environment before restart.
+- A source-restricted temporary development provider on
+  `dev-vault.tinfoil.sh` released exactly the one missing model key over TLS
+  1.3. The enclave completed the certificate-bound challenge protocol, mounted
+  the model, and reached ready without the key in external config.
+- The upstream `cvmimage` build for the exact source commit completed
+  successfully after the local Nix shipping-image build passed.
 - The temporary provider, private CA keys, external configs, listener, and
   firewall rule were removed after the test. Box3 was left with no deployments.
 
