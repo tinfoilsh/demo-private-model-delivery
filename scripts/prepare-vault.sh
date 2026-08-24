@@ -10,7 +10,7 @@ provider_binary="$provider_dir/attested-secrets-server"
 secrets_file="$provider_dir/secrets.json"
 
 provider_url=https://github.com/tinfoilsh/example-secret-keys.git
-provider_commit=517e90b4c12492a08d7af090821106673e672da1
+provider_commit=a92de50148d22e778be96a3f413eaabbefe745a5
 
 for command in git go; do
   command -v "$command" >/dev/null || {
