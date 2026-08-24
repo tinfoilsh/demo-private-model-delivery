@@ -8,7 +8,7 @@
 - Modelwrap SHA-256: `06a5a42e2126a5ed612c4b0617d191ed9c65bb5b3a183863e92ec959cf097f57`
 - Inference image: `ghcr.io/ggml-org/llama.cpp@sha256:d740abe8d85d092a9bdffcc19c0f85a3b7e7e9a0b9588d12ae224c15c436e17e`
 - Model identity: `tinfoilsh/demo-private-smollm2@2ca51f69b2fbf3f46eea72a3195388c5e93f84c0d36ccd439d91cf529ee8e7a3`
-- Active EMWP SHA-256: `3f066ac94a9e44156caa5e4109e28dff66bdbe0b1c1772dcd16a4fa0f1b464d1`
+- Active EMWP SHA-256: `4bb94a1f7a4b34c43d6a29bd9361787477e081224e4604d1800d97e1393fd9cb`
 - CVM source: `tinfoilsh/cvmimage@5c4ae156f3a4945dd1e0231a90416d3d8c14a464`
 - CVM rootfs SHA-256: `4fa1860446c551eacc84da6bc62f182c0e066e4a7da0ed7b821d7b2675ec4644`
 - CVM kernel SHA-256: `b1e042ac790ffbd1f8031d13e870f7b907d2bf685e755d43b2975c78752b42eb`
@@ -46,8 +46,10 @@
 | Development provider with unpublished local CVM | Complete protocol except verification | Pass |
 | Measured private CA for vault HTTPS | Connect and fetch | Pass |
 | Plaintext HTTP vault URL | Reject | Pass |
-| Provider with released CVM and v3 provenance | Pass | Blocked on approved CVM release |
-| Private workload repository collateral | Pass | Blocked on private-collateral support |
+| Provider with released CVM and v3 provenance | Pass | Pass |
+| Fresh `tinfoil-go feat/v3` verification | Pass | Pass at `c1fac8b` |
+| Full enclave redeploy and inference | Pass | Pass |
+| Private workload repository collateral | Not required | Public config repo; private model remains encrypted |
 
 ## Executed tests
 
@@ -76,8 +78,25 @@
   the model, and reached ready without the key in external config.
 - The upstream `cvmimage` build for the exact source commit completed
   successfully after the local Nix shipping-image build passed.
-- The temporary provider, private CA keys, external configs, listener, and
-  firewall rule were removed after the test. Box3 was left with no deployments.
+- The public `v0.0.2` demo release authenticated `cvmimage v0.11.1`, and its
+  freshness witness was issued from `freshness-witness` main.
+- The strict provider at `dev-vault.tinfoil.sh` used
+  `example-secret-keys@a92de50`, verified the fresh v3 envelope offline, and
+  released exactly one secret. Boot reported `handed off 0 workload secret(s);
+  fetched 1 from vault`.
+- The released workload returned valid OpenAI-compatible inference with model
+  path `/tinfoil/models/private-smollm2/SmolLM2-135M-Instruct.Q4_K_M.gguf`.
+- `tinfoil-go feat/v3@c1fac8b` independently verified the promoted enclave as
+  `tinfoilsh/demo-private-model-delivery@v0.0.2` with digest
+  `bf2082e351b021e7a460c5260720a40dc4feb79165426f42e300856cbc036c16`.
+- A full redeploy produced an independently attested update candidate, fetched
+  the key again, completed inference, and promoted successfully.
+- Released `tinfoil-go v0.15.4` reached its legacy online VCEK lookup but could
+  not complete because both `kds-proxy.tinfoil.sh` and AMD KDS timed out from
+  Box3. The v3 verifier and provider were unaffected because all collateral was
+  carried in the attestation envelope.
+- Box3 was left with no demo deployments after qualification. The dedicated
+  development Vault remains configured for this demo repository.
 
 ## Box3 resolution
 
@@ -98,12 +117,11 @@ actual sequence was:
 in self-signed dev launches. Qualification used a harmless placeholder token;
 shipping control-plane deployments already carry their real token.
 
-## Remaining release gates
+## Follow-ups
 
-1. Review and merge the measured private-CA support if local or air-gapped
-   customer vaults are a release requirement.
-2. Choose public workload provenance or implement authenticated private GitHub
-   collateral for ATC and `freshness-witness`.
-3. Cut the approved CVM release through the normal supply-chain workflow.
-4. Configure the provider for `tinfoilsh/demo-private-model-delivery`, remove
-   the local external-config key, and prove successful v3-gated key release.
+1. Review and deploy `controlplane#582` so the production heartbeat keeps this
+   demo's freshness witness renewed automatically.
+2. Merge measured private-CA support only if local or air-gapped customer
+   Vaults are a release requirement.
+3. Restore legacy AMD KDS reachability before using released v2 verification
+   as an independent compatibility check from Box3.
