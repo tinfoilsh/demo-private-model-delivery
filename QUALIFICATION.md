@@ -1,7 +1,7 @@
 # Qualification
 
 This file records the original `v0.0.2` qualification. The current blueprint
-uses `tinfoilsh/keyserver` as its canonical attested secret broker; historical
+uses `tinfoilsh/keyserver` as its canonical Key Broker Service (KBS); historical
 provider names and commit pins below are retained as test evidence.
 
 ## Pins

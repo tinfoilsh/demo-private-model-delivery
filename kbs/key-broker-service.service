@@ -1,5 +1,5 @@
 [Unit]
-Description=Attested private-model secret broker
+Description=Private-model Key Broker Service
 After=network-online.target
 Wants=network-online.target
 
@@ -7,8 +7,8 @@ Wants=network-online.target
 Type=simple
 User=attested-secrets
 Group=attested-secrets
-EnvironmentFile=/etc/tinfoil-private-model-demo/broker.env
-ExecStart=/opt/tinfoil/private-model-demo/attested-secret-broker
+EnvironmentFile=/etc/tinfoil-private-model-demo/kbs.env
+ExecStart=/opt/tinfoil/private-model-demo/key-broker-service
 Restart=on-failure
 RestartSec=5s
 AmbientCapabilities=CAP_NET_BIND_SERVICE
