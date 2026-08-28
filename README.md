@@ -15,8 +15,7 @@ The demo uses:
 The complete customer deployment is in `kbs/`. It pins the canonical
 [`tinfoilsh/keyserver`](https://github.com/tinfoilsh/keyserver) source and
 includes a hardened systemd unit. The measured `kbs-url` configuration field
-identifies the KBS that validates fresh enclave attestations. The legacy
-`vault-url` spelling remains supported for existing releases.
+identifies the KBS that validates fresh enclave attestations.
 
 ## Prepare the encrypted model
 
