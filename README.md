@@ -14,9 +14,9 @@ The demo uses:
 
 The complete customer deployment is in `kbs/`. It pins the canonical
 [`tinfoilsh/keyserver`](https://github.com/tinfoilsh/keyserver) source and
-includes a hardened systemd unit. The platform configuration field remains
-named `vault-url` for compatibility; it identifies any compatible KBS that
-validates fresh enclave attestations.
+includes a hardened systemd unit. The measured `kbs-url` configuration field
+identifies the KBS that validates fresh enclave attestations. The legacy
+`vault-url` spelling remains supported for existing releases.
 
 ## Prepare the encrypted model
 
@@ -85,7 +85,7 @@ after the demo has its own release provenance, configure the KBS for
 `tinfoilsh/demo-private-model-delivery`.
 
 KBS transport is always HTTPS, including local and air-gapped deployments.
-Use a private CA embedded as `vault-ca` in the measured configuration rather
+Use a private CA embedded in the measured configuration rather
 than plaintext HTTP; the host and network remain outside the CVM trust boundary.
 
 ## Release boundary

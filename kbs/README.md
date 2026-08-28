@@ -60,8 +60,8 @@ sudo systemctl enable --now key-broker-service.service
 curl --fail https://kbs.example.com/health
 ```
 
-Set `vault-url` in measured `tinfoil-config.yml` to that HTTPS origin. Despite
-the legacy field name, it may point to any compatible KBS. The KBS consumes one
-fresh, single-use challenge, verifies the v3 document offline, binds the
+Set `kbs-url` in measured `tinfoil-config.yml` to that HTTPS origin. The legacy
+`vault-url` spelling remains supported for existing releases. The KBS consumes
+one fresh, single-use challenge, verifies the v3 document offline, binds the
 verified TLS key to the `/fetch` connection, and returns only the secret names
 authorized by the pinned release policy.

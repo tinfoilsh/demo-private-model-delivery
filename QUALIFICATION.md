@@ -48,8 +48,8 @@ provider names and commit pins below are retained as test evidence.
 | Provider response/log error paths | Never expose model key | Pass |
 | Strict provider with unpublished local CVM | Reject at provenance | Pass |
 | Development provider with unpublished local CVM | Complete protocol except verification | Pass |
-| Measured private CA for vault HTTPS | Connect and fetch | Pass |
-| Plaintext HTTP vault URL | Reject | Pass |
+| Measured private CA for KBS HTTPS | Connect and fetch | Pass |
+| Plaintext HTTP KBS URL | Reject | Pass |
 | Provider with released CVM and v3 provenance | Pass | Pass |
 | Fresh `tinfoil-go feat/v3` verification | Pass | Pass at `c1fac8b` |
 | Full enclave redeploy and inference | Pass | Pass |
