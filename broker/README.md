@@ -37,6 +37,24 @@ The broker terminates TLS itself because forwarded client-certificate headers
 are not an authentication boundary.
 
 ```bash
+sudo install -d -o root -g root -m 0755 /opt/tinfoil/private-model-demo
+sudo install -d -o attested-secrets -g attested-secrets -m 0700 \
+  /etc/tinfoil-private-model-demo
+sudo install -o root -g root -m 0555 \
+  .private/broker/attested-secret-broker \
+  /opt/tinfoil/private-model-demo/attested-secret-broker
+sudo install -o attested-secrets -g attested-secrets -m 0400 \
+  .private/broker/{secrets.json,policy.yaml} \
+  /etc/tinfoil-private-model-demo/
+sudo install -o root -g root -m 0644 \
+  broker/broker.env.example \
+  /etc/tinfoil-private-model-demo/broker.env
+sudo install -o root -g root -m 0644 \
+  broker/attested-secret-broker.service \
+  /etc/systemd/system/attested-secret-broker.service
+```
+
+```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now attested-secret-broker.service
 curl --fail https://broker.example.com/health
