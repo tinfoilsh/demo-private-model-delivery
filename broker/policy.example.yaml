@@ -1,0 +1,9 @@
+workloads:
+  private-model-demo:
+    repo: tinfoilsh/demo-private-model-delivery
+    tag: v0.0.2
+    domain: private-model-v0111-strict.box3.tinfoil.sh
+    secrets:
+      PRIVATE_MODEL_KEY:
+        path: models/private-smollm2
+        field: key

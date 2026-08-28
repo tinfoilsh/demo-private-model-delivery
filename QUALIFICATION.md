@@ -1,5 +1,9 @@
 # Qualification
 
+This file records the original `v0.0.2` qualification. The current blueprint
+uses `tinfoilsh/keyserver` as its canonical attested secret broker; historical
+provider names and commit pins below are retained as test evidence.
+
 ## Pins
 
 - Model source revision: `476854d00ede130660aba430d15f9347ad2e7d0e`
