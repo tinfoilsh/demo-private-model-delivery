@@ -39,7 +39,7 @@ sudo systemctl enable --now attested-secret-provider.service
 curl --fail https://vault.example.com/health
 ```
 
-Set `vault-url` in the measured `tinfoil-config.yml` to that HTTPS origin. The
+Set `keyserver-url` in the measured `tinfoil-config.yml` to that HTTPS origin. The
 provider authorizes the workload repository, consumes a certificate-bound
 challenge, verifies the fresh v3 document offline, and returns only the secret
 names declared by that workload.
